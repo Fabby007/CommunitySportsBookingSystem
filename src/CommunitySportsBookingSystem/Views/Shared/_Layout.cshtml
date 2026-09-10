@@ -1,0 +1,117 @@
+@using Microsoft.AspNetCore.Identity
+@using CommunitySportsBookingSystem.Models
+@inject SignInManager<ApplicationUser> SignInManager
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Community Sports Facilities Booking System</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css" integrity="sha512-jnSuA4Ss2PkkikSOLtYs8BlYIeeIK1h99ty4YfvRPAlzr377vr3CXDb7sb7eEEBYjDtcYj+AjBH3FLv5uSJuXg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body>
+    <header class="site-header">
+        <nav class="navbar navbar-expand-lg navbar-app">
+            <div class="container-app d-flex align-items-center flex-wrap">
+                <a class="navbar-brand d-flex align-items-center gap-2 me-4" asp-area="" asp-controller="Home" asp-action="Index">
+                    <span class="brand-mark"><i class="bi bi-trophy-fill"></i></span>
+                    <span class="brand-text">Community Sports Council<small>Facilities Booking</small></span>
+                </a>
+                <button class="navbar-toggler border-0 ms-auto" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav"
+                        aria-controls="mainNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="mainNav">
+                    <ul class="navbar-nav mx-lg-auto">
+                        <li class="nav-item">
+                            <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Home" ? "active" : "")" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Facilities" ? "active" : "")" asp-area="" asp-controller="Facilities" asp-action="Search">Facilities</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Reviews" ? "active" : "")" asp-area="" asp-controller="Reviews" asp-action="Browse">Reviews</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Inquiries" ? "active" : "")" asp-area="" asp-controller="Inquiries" asp-action="Create">Contact</a>
+                        </li>
+                        @if (SignInManager.IsSignedIn(User))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Bookings" ? "active" : "")" asp-area="" asp-controller="Bookings" asp-action="Mine">My Bookings</a>
+                            </li>
+                        }
+                    </ul>
+                    <ul class="navbar-nav align-items-lg-center gap-lg-2 mt-3 mt-lg-0">
+                        @if (SignInManager.IsSignedIn(User))
+                        {
+                            <li class="nav-item">
+                                <span class="nav-user-chip"><i class="bi bi-person-circle"></i> @User.Identity!.Name</span>
+                            </li>
+                            <li class="nav-item mt-2 mt-lg-0">
+                                <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
+                                    <button type="submit" class="btn btn-secondary-custom btn-sm w-100">Logout</button>
+                                </form>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="" asp-controller="Account" asp-action="Login">Login</a>
+                            </li>
+                            <li class="nav-item mt-2 mt-lg-0">
+                                <a class="btn btn-primary-custom btn-sm w-100" asp-area="" asp-controller="Account" asp-action="Register">Register</a>
+                            </li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main role="main">
+        <div class="container-app pt-4">
+            <partial name="_AlertMessages" />
+        </div>
+        @RenderBody()
+    </main>
+
+    <footer class="site-footer">
+        <div class="container-app">
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="footer-brand"><i class="bi bi-trophy-fill"></i> Community Sports Council</div>
+                    <p class="footer-desc">Helping local residents discover, search, and book community sports facilities — courts, pitches, and halls — across the area.</p>
+                </div>
+                <div class="col-6 col-md-4">
+                    <h6>Explore</h6>
+                    <ul class="list-unstyled d-flex flex-column gap-2">
+                        <li><a asp-controller="Facilities" asp-action="Search">Facilities</a></li>
+                        <li><a asp-controller="Reviews" asp-action="Browse">Reviews</a></li>
+                        <li><a asp-controller="Inquiries" asp-action="Create">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="col-6 col-md-4">
+                    <h6>Membership</h6>
+                    <ul class="list-unstyled d-flex flex-column gap-2">
+                        <li><a asp-controller="Account" asp-action="Login">Login</a></li>
+                        <li><a asp-controller="Account" asp-action="Register">Register</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                &copy; @DateTime.Now.Year Community Sports Council. Community Sports Facilities Booking System.
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.bundle.min.js" integrity="sha512-7Pi/otdlbbCR+LnW+F7PwFcSDJOuUJB3OxtEHbg4vSMvzvJjde4Po1v4BR9Gdc9aXNUNFVUY+SK51wWT8WF0Gg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

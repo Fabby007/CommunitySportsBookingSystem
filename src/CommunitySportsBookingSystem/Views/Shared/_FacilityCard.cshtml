@@ -1,0 +1,38 @@
+@model CommunitySportsBookingSystem.ViewModels.FacilitySearchResultViewModel
+
+<div class="facility-card">
+    <div class="facility-card-top">
+        <div class="facility-card-type">@Model.FacilityType</div>
+        <h3 class="facility-card-name">@Model.Name</h3>
+    </div>
+    <div class="facility-card-body">
+        <div class="facility-meta"><i class="bi bi-geo-alt-fill"></i> @Model.Location</div>
+        <div class="facility-meta"><i class="bi bi-clock-fill"></i> @Model.OpeningTime.ToString(@"hh\:mm") - @Model.ClosingTime.ToString(@"hh\:mm")</div>
+        @if (!string.IsNullOrWhiteSpace(Model.Description))
+        {
+            <p class="text-secondary small mb-0">@Model.Description</p>
+        }
+        @if (!string.IsNullOrWhiteSpace(Model.Amenities))
+        {
+            <div class="facility-meta"><i class="bi bi-stars"></i> @Model.Amenities</div>
+        }
+        <div class="facility-sport-tags">
+            @foreach (var sport in Model.Sports)
+            {
+                <span class="tag">@sport</span>
+            }
+        </div>
+        @if (Model.HasAvailability)
+        {
+            <span class="badge-app badge-available"><i class="bi bi-check-circle-fill"></i> Availability today</span>
+        }
+        else
+        {
+            <span class="badge-app badge-unavailable"><i class="bi bi-dash-circle"></i> Fully booked today</span>
+        }
+    </div>
+    <div class="facility-card-footer">
+        <a asp-controller="Facilities" asp-action="Details" asp-route-id="@Model.FacilityId" class="btn btn-secondary-custom btn-sm">View Details</a>
+        <a asp-controller="Bookings" asp-action="Create" asp-route-facilityId="@Model.FacilityId" class="btn btn-primary-custom btn-sm">Book</a>
+    </div>
+</div>

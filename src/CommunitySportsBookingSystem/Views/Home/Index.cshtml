@@ -1,0 +1,253 @@
+@model CommunitySportsBookingSystem.ViewModels.HomeIndexViewModel
+@{
+    ViewData["Title"] = "Home";
+
+    var sportIcons = new Dictionary<string, string>
+    {
+        ["Tennis"] = "bi-circle",
+        ["Football"] = "bi-dribbble",
+        ["Basketball"] = "bi-circle-fill",
+        ["Badminton"] = "bi-feather",
+        ["Cricket"] = "bi-bullseye",
+    };
+
+    string IconFor(string sport) => sportIcons.TryGetValue(sport, out var icon) ? icon : "bi-trophy";
+}
+
+<section class="hero">
+    <div class="container-app hero-inner">
+        <div class="row align-items-center g-5">
+            <div class="col-lg-6">
+                <span class="eyebrow"><i class="bi bi-stars"></i> Community Sports Made Simple</span>
+                <h1 class="mt-3">Find Your Space.<br />Play Your Game.</h1>
+                <p class="lead">
+                    Discover local sports facilities, check availability, book sessions, and
+                    take part in community sport — all in one place, run by the Community Sports Council.
+                </p>
+                <div class="hero-actions">
+                    <a asp-controller="Facilities" asp-action="Search" class="btn btn-primary-custom btn-lg">
+                        <i class="bi bi-search"></i> Find a Facility
+                    </a>
+                    @if (!Model.IsMember)
+                    {
+                        <a asp-controller="Account" asp-action="Register" class="btn btn-outline-navy btn-lg">Become a Member</a>
+                    }
+                </div>
+                <div class="hero-sports-line">Tennis &bull; Football &bull; Basketball &bull; Badminton &bull; Cricket</div>
+            </div>
+            <div class="col-lg-6">
+                <div class="hero-visual">
+                    <div class="hero-card">
+                        <div class="d-flex flex-wrap gap-2 mb-4">
+                            @foreach (var sport in Model.Sports)
+                            {
+                                <span class="hero-sport-chip"><i class="bi @IconFor(sport.Name)"></i> @sport.Name</span>
+                            }
+                        </div>
+                        <div class="hero-card-floating mb-3">
+                            <span class="icon-badge" style="background: var(--success-bg); color: var(--accent-dark);"><i class="bi bi-calendar-check-fill"></i></span>
+                            <div>
+                                <div class="fw-bold">Book in minutes</div>
+                                <div class="small text-secondary">Pick a time, confirm, play</div>
+                            </div>
+                        </div>
+                        <div class="hero-card-floating">
+                            <span class="icon-badge" style="background: var(--info-bg); color: var(--info);"><i class="bi bi-geo-alt-fill"></i></span>
+                            <div>
+                                <div class="fw-bold">@Model.FeaturedFacilities.Count facilities near you</div>
+                                <div class="small text-secondary">Courts, pitches &amp; sports halls</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="page-section bg-surface-alt">
+    <div class="container-app">
+        <div class="search-panel">
+            <div class="search-panel-heading"><i class="bi bi-search"></i> Quick Search</div>
+            <form method="get" asp-controller="Facilities" asp-action="Search" class="row g-3 align-items-end">
+                <div class="col-md-3">
+                    <label class="form-label">Sport</label>
+                    <select name="SportId" class="form-select">
+                        <option value="">Any sport</option>
+                        @foreach (var s in Model.Sports)
+                        {
+                            <option value="@s.SportId">@s.Name</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Facility type</label>
+                    <input type="text" name="FacilityType" class="form-control" placeholder="e.g. Sports Hall" />
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Location</label>
+                    <input type="text" name="Location" class="form-control" placeholder="e.g. Riverside" />
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Date</label>
+                    <input type="date" name="Date" class="form-control" />
+                </div>
+                <div class="col-12">
+                    <button type="submit" class="btn btn-primary-custom"><i class="bi bi-search"></i> Search Facilities</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+
+<section class="page-section">
+    <div class="container-app">
+        <h2 class="section-title">Explore by Sport</h2>
+        <p class="section-subtitle">Jump straight to the facilities that support your favourite sport.</p>
+        <div class="row g-3">
+            @foreach (var sport in Model.Sports)
+            {
+                <div class="col-6 col-md-4 col-lg-2">
+                    <a class="sport-card" asp-controller="Facilities" asp-action="Search" asp-route-SportId="@sport.SportId">
+                        <div class="sport-card-icon"><i class="bi @IconFor(sport.Name)"></i></div>
+                        <h3>@sport.Name</h3>
+                        <p>@sport.FacilityCount facilit@(sport.FacilityCount == 1 ? "y" : "ies")</p>
+                    </a>
+                </div>
+            }
+            <div class="col-6 col-md-4 col-lg-2">
+                <a class="sport-card" asp-controller="Facilities" asp-action="Search">
+                    <div class="sport-card-icon"><i class="bi bi-grid-3x3-gap-fill"></i></div>
+                    <h3>Multi-Sport</h3>
+                    <p>Browse all</p>
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+@if (Model.FeaturedFacilities.Count > 0)
+{
+    <section class="page-section bg-section-alt">
+        <div class="container-app">
+            <h2 class="section-title">Featured Facilities</h2>
+            <p class="section-subtitle">A snapshot of what's available across the community.</p>
+            <div class="row g-4">
+                @foreach (var f in Model.FeaturedFacilities)
+                {
+                    <div class="col-md-6 col-lg-4">
+                        <div class="facility-card">
+                            <div class="facility-card-top">
+                                <div class="facility-card-type">@f.FacilityType</div>
+                                <h3 class="facility-card-name">@f.Name</h3>
+                            </div>
+                            <div class="facility-card-body">
+                                <div class="facility-meta"><i class="bi bi-geo-alt-fill"></i> @f.Location</div>
+                                @if (Model.IsMember && f.Sports.Count > 0)
+                                {
+                                    <div class="facility-sport-tags">
+                                        @foreach (var sport in f.Sports)
+                                        {
+                                            <span class="tag">@sport</span>
+                                        }
+                                    </div>
+                                }
+                            </div>
+                            <div class="facility-card-footer">
+                                <a asp-controller="Facilities" asp-action="Details" asp-route-id="@f.FacilityId" class="btn btn-secondary-custom btn-sm w-100">View Details</a>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </section>
+}
+
+<section class="page-section">
+    <div class="container-app">
+        <h2 class="section-title">How It Works</h2>
+        <p class="section-subtitle">
+            @(Model.IsMember ? "Booking a facility takes three simple steps." : "Membership is required to make a booking — registration only takes a couple of minutes.")
+        </p>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="how-it-works-step">
+                    <div class="step-number">1</div>
+                    <h5>Find a Facility</h5>
+                    <p class="text-secondary small">Search by sport, type, location, or date to see what's available.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="how-it-works-step">
+                    <div class="step-number">2</div>
+                    <h5>Choose Your Time</h5>
+                    <p class="text-secondary small">Pick a date and time slot within the facility's operating hours.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="how-it-works-step">
+                    <div class="step-number">3</div>
+                    <h5>Book &amp; Play</h5>
+                    <p class="text-secondary small">Confirm your booking instantly — no conflicting reservations.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="page-section bg-surface-alt">
+    <div class="container-app">
+        <h2 class="section-title">Why Community Members Love It</h2>
+        <div class="row g-4">
+            <div class="col-md-6">
+                <div class="benefit-item">
+                    <span class="benefit-icon"><i class="bi bi-lightning-charge-fill"></i></span>
+                    <div>
+                        <h6 class="mb-1">Easy Booking</h6>
+                        <p class="text-secondary small mb-0">Reserve a court, pitch, or hall in a few clicks.</p>
+                    </div>
+                </div>
+                <div class="benefit-item">
+                    <span class="benefit-icon"><i class="bi bi-calendar-x-fill"></i></span>
+                    <div>
+                        <h6 class="mb-1">Fewer Scheduling Conflicts</h6>
+                        <p class="text-secondary small mb-0">Real-time availability keeps double-bookings out.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="benefit-item">
+                    <span class="benefit-icon"><i class="bi bi-compass-fill"></i></span>
+                    <div>
+                        <h6 class="mb-1">Discover Local Facilities</h6>
+                        <p class="text-secondary small mb-0">Find courts and grounds you didn't know were nearby.</p>
+                    </div>
+                </div>
+                <div class="benefit-item">
+                    <span class="benefit-icon"><i class="bi bi-chat-heart-fill"></i></span>
+                    <div>
+                        <h6 class="mb-1">Community Participation</h6>
+                        <p class="text-secondary small mb-0">Read and share reviews with fellow members.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="page-section">
+    <div class="container-app">
+        <div class="cta-banner">
+            <h2>Ready to get active?</h2>
+            <p>Join the Community Sports Council and start booking today.</p>
+            <div class="d-flex justify-content-center gap-2 flex-wrap">
+                <a asp-controller="Facilities" asp-action="Search" class="btn btn-primary-custom btn-lg">Explore Facilities</a>
+                @if (!Model.IsMember)
+                {
+                    <a asp-controller="Account" asp-action="Register" class="btn btn-outline-navy btn-lg">Create an Account</a>
+                }
+            </div>
+        </div>
+    </div>
+</section>

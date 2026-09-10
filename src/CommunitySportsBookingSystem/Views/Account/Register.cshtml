@@ -1,0 +1,120 @@
+@model CommunitySportsBookingSystem.ViewModels.RegisterViewModel
+@{
+    ViewData["Title"] = "Register";
+}
+
+<div class="container-app page-content">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="auth-card">
+                <div class="row g-0">
+                    <div class="col-lg-4 auth-side">
+                        <span class="eyebrow" style="background: rgba(255,255,255,.12); color: #fff;"><i class="bi bi-people-fill"></i> Join the Council</span>
+                        <h3 class="mt-3">Become a Member</h3>
+                        <p class="text-white-50">Membership unlocks full facility search, booking, and reviews.</p>
+                        <ul>
+                            <li><i class="bi bi-check-circle-fill"></i> See exact availability &amp; opening hours</li>
+                            <li><i class="bi bi-check-circle-fill"></i> Book courts, pitches &amp; sports halls</li>
+                            <li><i class="bi bi-check-circle-fill"></i> Manage and cancel bookings</li>
+                            <li><i class="bi bi-check-circle-fill"></i> Leave reviews after you play</li>
+                        </ul>
+                    </div>
+                    <div class="col-lg-8 auth-form-side">
+                        <h4 class="fw-bold mb-1">Create Your Account</h4>
+                        <p class="text-secondary mb-4">It only takes a couple of minutes.</p>
+
+                        <form asp-controller="Account" asp-action="Register" method="post">
+                            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                            <div class="form-section-title">Personal Details</div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label asp-for="FirstName" class="form-label"></label>
+                                    <input asp-for="FirstName" class="form-control" />
+                                    <span asp-validation-for="FirstName" class="text-danger small"></span>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label asp-for="LastName" class="form-label"></label>
+                                    <input asp-for="LastName" class="form-control" />
+                                    <span asp-validation-for="LastName" class="text-danger small"></span>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label asp-for="Email" class="form-label"></label>
+                                    <input asp-for="Email" class="form-control" />
+                                    <span asp-validation-for="Email" class="text-danger small"></span>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label asp-for="PhoneNumber" class="form-label"></label>
+                                    <input asp-for="PhoneNumber" class="form-control" />
+                                    <span asp-validation-for="PhoneNumber" class="text-danger small"></span>
+                                </div>
+                            </div>
+
+                            <div class="form-section-title">Address</div>
+                            <div class="mb-3">
+                                <label asp-for="AddressLine" class="form-label"></label>
+                                <input asp-for="AddressLine" class="form-control" />
+                                <span asp-validation-for="AddressLine" class="text-danger small"></span>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label asp-for="City" class="form-label"></label>
+                                    <input asp-for="City" class="form-control" />
+                                    <span asp-validation-for="City" class="text-danger small"></span>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label asp-for="Postcode" class="form-label"></label>
+                                    <input asp-for="Postcode" class="form-control" />
+                                    <span asp-validation-for="Postcode" class="text-danger small"></span>
+                                </div>
+                            </div>
+
+                            <div class="form-section-title">Sports Preferences</div>
+                            <div class="mb-3">
+                                <label class="form-label">Which sports are you interested in?</label>
+                                <div class="row g-2">
+                                    @for (var i = 0; i < Model.AvailableSports.Count; i++)
+                                    {
+                                        var sport = Model.AvailableSports[i];
+                                        <div class="col-6 col-md-4">
+                                            <label class="sport-pref-option" for="sport-@sport.SportId">
+                                                <input class="form-check-input mt-0" type="checkbox" name="SelectedSportIds" value="@sport.SportId" id="sport-@sport.SportId" />
+                                                <span>@sport.Name</span>
+                                            </label>
+                                        </div>
+                                    }
+                                </div>
+                                <span asp-validation-for="SelectedSportIds" class="text-danger small"></span>
+                            </div>
+
+                            <div class="form-section-title">Account Security</div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label asp-for="Password" class="form-label"></label>
+                                    <input asp-for="Password" class="form-control" />
+                                    <span asp-validation-for="Password" class="text-danger small"></span>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label asp-for="ConfirmPassword" class="form-label"></label>
+                                    <input asp-for="ConfirmPassword" class="form-control" />
+                                    <span asp-validation-for="ConfirmPassword" class="text-danger small"></span>
+                                </div>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary-custom w-100 mb-3 mt-2">Create My Account</button>
+                            <p class="text-center text-secondary small mb-0">
+                                Already a member? <a asp-controller="Account" asp-action="Login" class="fw-bold">Sign In</a>
+                            </p>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

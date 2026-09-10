@@ -1,0 +1,84 @@
+@model CommunitySportsBookingSystem.ViewModels.BookingCreateViewModel
+@{
+    ViewData["Title"] = "Book " + Model.FacilityName;
+}
+
+<div class="container-app page-content">
+    <div class="breadcrumb-trail">
+        <a asp-controller="Home" asp-action="Index">Home</a> /
+        <a asp-controller="Facilities" asp-action="Search">Facilities</a> /
+        <a asp-controller="Facilities" asp-action="Details" asp-route-id="@Model.FacilityId">@Model.FacilityName</a> /
+        Book
+    </div>
+
+    <h1 class="page-heading">Book @Model.FacilityName</h1>
+    <p class="page-subtitle">Choose a date and time within the facility's operating hours.</p>
+
+    <div class="row g-4">
+        <div class="col-lg-7">
+            <div class="booking-summary-card">
+                <div class="facility-meta mb-0"><i class="bi bi-clock-fill"></i> Operating hours: @Model.OpeningTime.ToString(@"hh\:mm") - @Model.ClosingTime.ToString(@"hh\:mm")</div>
+            </div>
+
+            @if (!ViewData.ModelState.IsValid)
+            {
+                <div class="alert-app alert-app-danger">
+                    <i class="bi bi-exclamation-triangle-fill"></i>
+                    <div asp-validation-summary="ModelOnly"></div>
+                </div>
+            }
+
+            <div class="card-app card-app-pad">
+                <form asp-controller="Bookings" asp-action="Create" method="post" id="booking-form">
+                    <input type="hidden" asp-for="FacilityId" />
+                    <input type="hidden" asp-for="FacilityName" />
+                    <input type="hidden" asp-for="OpeningTime" />
+                    <input type="hidden" asp-for="ClosingTime" />
+
+                    <div class="mb-3">
+                        <label asp-for="BookingDate" class="form-label"></label>
+                        <input asp-for="BookingDate" type="date" class="form-control" min="@DateOnly.FromDateTime(DateTime.Now).ToString("yyyy-MM-dd")" />
+                        <span asp-validation-for="BookingDate" class="text-danger small"></span>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="StartTime" class="form-label"></label>
+                            <input asp-for="StartTime" type="time" class="form-control" />
+                            <span asp-validation-for="StartTime" class="text-danger small"></span>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="EndTime" class="form-label"></label>
+                            <input asp-for="EndTime" type="time" class="form-control" />
+                            <span asp-validation-for="EndTime" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary-custom" id="submit-btn"><i class="bi bi-calendar-check-fill"></i> Confirm Booking</button>
+                    <a asp-controller="Facilities" asp-action="Details" asp-route-id="@Model.FacilityId" class="btn btn-link">Back</a>
+                </form>
+            </div>
+        </div>
+        <div class="col-lg-5">
+            <div class="booking-info-panel">
+                <div class="fw-bold mb-1"><i class="bi bi-info-circle-fill"></i> Before you book</div>
+                <ul>
+                    <li>Bookings must fall within the facility's operating hours.</li>
+                    <li>Overlapping or conflicting bookings will be rejected.</li>
+                    <li>Your booking is confirmed instantly once submitted.</li>
+                    <li>You can cancel a pending or confirmed booking any time from "My Bookings".</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        // Reduce accidental double-submits (server-side duplicate guard is authoritative).
+        document.getElementById('booking-form').addEventListener('submit', function () {
+            document.getElementById('submit-btn').disabled = true;
+        });
+    </script>
+}

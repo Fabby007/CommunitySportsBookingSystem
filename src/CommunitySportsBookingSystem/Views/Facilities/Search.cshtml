@@ -1,0 +1,90 @@
+@model CommunitySportsBookingSystem.ViewModels.FacilitySearchViewModel
+@{
+    ViewData["Title"] = "Search Facilities";
+    var hasResults = Model.IsMember ? Model.MemberResults.Count > 0 : Model.GuestResults.Count > 0;
+}
+
+<div class="container-app page-content">
+    <h1 class="page-heading">Facility Search</h1>
+    <p class="page-subtitle">Find courts, pitches, and sports halls across the community.</p>
+
+    @if (!Model.IsMember)
+    {
+        <div class="alert-app alert-app-info">
+            <i class="bi bi-info-circle-fill"></i>
+            <div>
+                You're browsing as a guest, so only general facility information is shown here.
+                <a asp-controller="Account" asp-action="Login">Log in</a> or
+                <a asp-controller="Account" asp-action="Register">register</a> to see full details and book.
+            </div>
+        </div>
+    }
+
+    <div class="search-panel mb-4">
+        <div class="search-panel-heading"><i class="bi bi-funnel-fill"></i> Filter Facilities</div>
+        <form method="get" asp-controller="Facilities" asp-action="Search" class="row g-3 align-items-end">
+            <div class="col-md-2">
+                <label class="form-label">Facility type</label>
+                <input type="text" name="FacilityType" value="@Model.FacilityType" class="form-control" />
+            </div>
+            <div class="col-md-2">
+                <label class="form-label">Sport</label>
+                <select name="SportId" class="form-select">
+                    <option value="">Any</option>
+                    @foreach (var s in Model.AvailableSports)
+                    {
+                        <option value="@s.SportId" selected="@(Model.SportId == s.SportId)">@s.Name</option>
+                    }
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label class="form-label">Location</label>
+                <input type="text" name="Location" value="@Model.Location" class="form-control" />
+            </div>
+            <div class="col-md-2">
+                <label class="form-label">Date</label>
+                <input type="date" name="Date" value="@Model.Date?.ToString("yyyy-MM-dd")" class="form-control" />
+            </div>
+            <div class="col-md-2">
+                <label class="form-label">Start time</label>
+                <input type="time" name="StartTime" value="@Model.StartTime" class="form-control" />
+            </div>
+            <div class="col-md-2">
+                <label class="form-label">End time</label>
+                <input type="time" name="EndTime" value="@Model.EndTime" class="form-control" />
+            </div>
+            <div class="col-12 d-flex gap-2">
+                <button type="submit" class="btn btn-primary-custom"><i class="bi bi-search"></i> Search</button>
+                <a asp-controller="Facilities" asp-action="Search" class="btn btn-secondary-custom">Reset Filters</a>
+            </div>
+        </form>
+    </div>
+
+    @if (!hasResults)
+    {
+        <div class="empty-state">
+            <i class="bi bi-search"></i>
+            <h5>No facilities match these filters</h5>
+            <p>Try widening your search, or browse everything we offer.</p>
+            <a asp-controller="Facilities" asp-action="Search" class="btn btn-primary-custom">Browse All Facilities</a>
+        </div>
+    }
+    else if (Model.IsMember)
+    {
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+            @foreach (var f in Model.MemberResults)
+            {
+                <div class="col"><partial name="_FacilityCard" model="f" /></div>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+            @foreach (var f in Model.GuestResults)
+            {
+                <div class="col"><partial name="_GuestFacilityCard" model="f" /></div>
+            }
+        </div>
+    }
+</div>

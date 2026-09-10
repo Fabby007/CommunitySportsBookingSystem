@@ -1,0 +1,59 @@
+@model CommunitySportsBookingSystem.ViewModels.ReviewCreateViewModel
+@{
+    ViewData["Title"] = "Leave a Review";
+}
+
+<div class="container-app page-content">
+    <div class="row justify-content-center">
+        <div class="col-lg-7">
+            <h1 class="page-heading">Review: @Model.FacilityName</h1>
+            <p class="page-subtitle">Booking date: @Model.BookingDate.ToString("yyyy-MM-dd")</p>
+
+            <div class="alert-app alert-app-info">
+                <i class="bi bi-info-circle-fill"></i>
+                <div>Reviews are only available for facilities you've completed a booking at.</div>
+            </div>
+
+            @if (!ViewData.ModelState.IsValid)
+            {
+                <div class="alert-app alert-app-danger">
+                    <i class="bi bi-exclamation-triangle-fill"></i>
+                    <div asp-validation-summary="ModelOnly"></div>
+                </div>
+            }
+
+            <div class="card-app card-app-pad">
+                <form asp-controller="Reviews" asp-action="Create" method="post">
+                    <input type="hidden" asp-for="BookingId" />
+                    <input type="hidden" asp-for="FacilityName" />
+                    <input type="hidden" asp-for="BookingDate" />
+
+                    <div class="mb-4">
+                        <label class="form-label d-block">Rating</label>
+                        <div class="star-rating">
+                            @for (var i = 5; i >= 1; i--)
+                            {
+                                <input type="radio" id="star@(i)" name="Rating" value="@i" checked="@(Model.Rating == i)" />
+                                <label for="star@(i)" title="@i stars"><i class="bi bi-star-fill"></i></label>
+                            }
+                        </div>
+                        <span asp-validation-for="Rating" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Comment" class="form-label"></label>
+                        <textarea asp-for="Comment" class="form-control" rows="4" maxlength="1000"></textarea>
+                        <span asp-validation-for="Comment" class="text-danger small"></span>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary-custom">Submit Review</button>
+                    <a asp-controller="Bookings" asp-action="Mine" class="btn btn-link">Cancel</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

@@ -1,0 +1,63 @@
+@using CommunitySportsBookingSystem.Models
+@model List<CommunitySportsBookingSystem.ViewModels.BookingListItemViewModel>
+@{
+    ViewData["Title"] = "My Bookings";
+
+    (string Css, string Icon) StatusStyle(BookingStatus status) => status switch
+    {
+        BookingStatus.Pending => ("status-pending", "bi-hourglass-split"),
+        BookingStatus.Confirmed => ("status-confirmed", "bi-check-circle-fill"),
+        BookingStatus.Completed => ("status-completed", "bi-flag-fill"),
+        BookingStatus.Cancelled => ("status-cancelled", "bi-x-circle-fill"),
+        _ => ("status-pending", "bi-question-circle")
+    };
+
+    var today = DateOnly.FromDateTime(DateTime.Now);
+}
+
+<div class="container-app page-content">
+    <h1 class="page-heading">My Bookings</h1>
+    <p class="page-subtitle">View and manage your facility reservations.</p>
+
+    @if (Model.Count == 0)
+    {
+        <div class="empty-state">
+            <i class="bi bi-calendar-x"></i>
+            <h5>You don't have any bookings yet</h5>
+            <p>Search for a facility and book your first session.</p>
+            <a asp-controller="Facilities" asp-action="Search" class="btn btn-primary-custom">Find a Facility</a>
+        </div>
+    }
+    else
+    {
+        foreach (var b in Model)
+        {
+            var (css, icon) = StatusStyle(b.Status);
+            var isUpcoming = (b.Status == BookingStatus.Pending || b.Status == BookingStatus.Confirmed) && b.BookingDate >= today;
+            <div class="booking-row @(isUpcoming ? "upcoming" : "")">
+                <div class="booking-row-facility"><i class="bi bi-geo-alt-fill text-secondary me-1"></i> @b.FacilityName</div>
+                <div class="booking-row-meta">
+                    <span><i class="bi bi-calendar3"></i> @b.BookingDate.ToString("yyyy-MM-dd")</span>
+                    <span><i class="bi bi-clock"></i> @b.StartTime.ToString(@"hh\:mm") - @b.EndTime.ToString(@"hh\:mm")</span>
+                </div>
+                <span class="status-badge @css"><i class="bi @icon"></i> @b.Status</span>
+                <div class="booking-row-actions">
+                    @if (b.CanCancel)
+                    {
+                        <form asp-controller="Bookings" asp-action="Cancel" asp-route-id="@b.BookingId" method="post" class="d-inline">
+                            <button type="submit" class="btn btn-danger-custom btn-sm">Cancel</button>
+                        </form>
+                    }
+                    @if (b.CanReview)
+                    {
+                        <a asp-controller="Reviews" asp-action="Create" asp-route-bookingId="@b.BookingId" class="btn btn-secondary-custom btn-sm">Leave Review</a>
+                    }
+                    @if (b.AlreadyReviewed)
+                    {
+                        <span class="text-muted-2 small"><i class="bi bi-check2"></i> Reviewed</span>
+                    }
+                </div>
+            </div>
+        }
+    }
+</div>

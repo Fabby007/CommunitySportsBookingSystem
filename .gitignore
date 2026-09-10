@@ -1,0 +1,16 @@
+\bin/
+\obj/
+**/bin/
+**/obj/
+*.user
+*.suo
+.vs/
+.vscode/*.log
+
+appsettings.Development.json
+appsettings.*.local.json
+
+*.log
+.DS_Store
+Thumbs.db
+*.swp

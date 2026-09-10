@@ -1,0 +1,66 @@
+@model CommunitySportsBookingSystem.ViewModels.InquiryCreateViewModel
+@{
+    ViewData["Title"] = "Contact Us";
+}
+
+<div class="container-app page-content">
+    <h1 class="page-heading">Contact the Sports Council</h1>
+    <p class="page-subtitle">Have a question or comment? Send us a message and we'll get back to you.</p>
+
+    <div class="row g-4">
+        <div class="col-lg-4">
+            <div class="detail-header mb-0" style="padding: var(--space-4);">
+                <h5 class="mb-3" style="color:#fff;"><i class="bi bi-chat-dots-fill"></i> We're Here to Help</h5>
+                <p class="detail-meta mb-3">Whatever's on your mind, reach out and a member of the Council will respond.</p>
+                <ul class="list-unstyled d-flex flex-column gap-2 mb-0">
+                    <li class="detail-meta"><i class="bi bi-question-circle-fill"></i> Questions about facilities?</li>
+                    <li class="detail-meta"><i class="bi bi-person-badge-fill"></i> Membership questions?</li>
+                    <li class="detail-meta"><i class="bi bi-compass-fill"></i> Need help finding a sport?</li>
+                </ul>
+            </div>
+        </div>
+        <div class="col-lg-8">
+            @if (!ViewData.ModelState.IsValid)
+            {
+                <div class="alert-app alert-app-danger">
+                    <i class="bi bi-exclamation-triangle-fill"></i>
+                    <div asp-validation-summary="ModelOnly"></div>
+                </div>
+            }
+            <div class="card-app card-app-pad">
+                <form asp-controller="Inquiries" asp-action="Create" method="post">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="Name" class="form-label"></label>
+                            <input asp-for="Name" class="form-control" />
+                            <span asp-validation-for="Name" class="text-danger small"></span>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="Email" class="form-label"></label>
+                            <input asp-for="Email" class="form-control" />
+                            <span asp-validation-for="Email" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Subject" class="form-label"></label>
+                        <input asp-for="Subject" class="form-control" />
+                        <span asp-validation-for="Subject" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Message" class="form-label"></label>
+                        <textarea asp-for="Message" class="form-control" rows="5" maxlength="2000"></textarea>
+                        <span asp-validation-for="Message" class="text-danger small"></span>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary-custom"><i class="bi bi-send-fill"></i> Send Inquiry</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
